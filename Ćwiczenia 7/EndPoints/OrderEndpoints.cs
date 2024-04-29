@@ -7,7 +7,7 @@ public static class OrderEndpoints
 {
     public static void RegisterOrderEndpoints(this WebApplication app)
     {
-        app.MapGet("Order/{int:id}", )
+        //app.MapGet("Order/{int:id}", )
     }
     private static async Task<IResult> GetIdOrder()
 }
