@@ -7,6 +7,5 @@ public class Order
     public int Amount { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? FullfiledAt { get; set; }
-    public List<Product> Products { get; set; }
-    public List<ProductWarehouse> ProductWarehouses { get; set; }
+    
 }

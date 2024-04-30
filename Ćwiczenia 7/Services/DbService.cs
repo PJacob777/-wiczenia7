@@ -19,19 +19,68 @@ public class DbService(IConfiguration configuration) : IDbService
             await sqlConnection.OpenAsync();
         return sqlConnection;
     }
-    public Task<Order?> GetOrderDetails(int id)
+    public async Task<Order?> GetOrderDetails(int id)
     {
-        await using var connection = GetConnection();
-        var command = new SqlCommand("")
+        await using var connection = await GetConnection();
+        var command = new SqlCommand("SELECT * FROM Order o JOIN Product_Warehouse w On o.IdOrder = w.IdOrder Where o.IdOrder=@1",connection);
+        command.Parameters.AddWithValue("@1", id);
+        var reader = await command.ExecuteReaderAsync();
+        if (!reader.HasRows)
+        {
+            return null;
+        }
+
+
+        return new Order(){
+            IdOrder = reader.GetInt32(0),
+            IdProduct = reader.GetInt32(1),
+            Amount = reader.GetInt32(2),
+            CreatedAt = reader.GetDateTime(3),
+            FullfiledAt = reader.IsDBNull(4) ? null : reader.GetDateTime(4)
+        };
+
+
     }
 
-    public Task<Product?> GetProductDetails(int id)
+    public async Task<Product?> GetProductDetails(int id)
     {
-        throw new NotImplementedException();
+        await using var connection = await GetConnection();
+        var command = new SqlCommand("SELECT * FROM Product o JOIN Product_Warehouse w On o.IdProduct = w.IdProduct Where o.IdProduct=@1",connection);
+        command.Parameters.AddWithValue("@1", id);
+        var reader = await command.ExecuteReaderAsync();
+        if (!reader.HasRows)
+        {
+            return null;
+        }
+
+
+        return new Product(){
+            IdProduct = reader.GetInt32(0),
+            Name = reader.GetString(1),
+            Description = reader.GetString(2),
+            Price = reader.GetDouble(3)
+        };
+
+
+
     }
 
-    public Task<Warehouse?> GetWarehouseDetails(int id)
+    public async Task<Warehouse?> GetWarehouseDetails(int id)
     {
-        throw new NotImplementedException();
+        await using var connection = await GetConnection();
+        var command = new SqlCommand("SELECT * FROM Warehouse o JOIN Product_Warehouse w On o.IdWarehouse = w.IdWarehouse Where o.IdWarehouse=@1",connection);
+        command.Parameters.AddWithValue("@1", id);
+        var reader = await command.ExecuteReaderAsync();
+        if (!reader.HasRows)
+        {
+            return null;
+        }
+
+
+        return new Warehouse(){
+            IdWarehouse = reader.GetInt32(0),
+            Name = reader.GetString(1),
+            Address = reader.GetString(2),
+        };
     }
 }
